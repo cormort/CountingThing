@@ -6,7 +6,7 @@ import math
 
 # 定義所有可用的Emoji主題 (已新增臉部表情)
 EMOJI_THEMES = [
-    { "name": "動物", "items": ['🐶', '🐱', '🐭', '🦊', '🐻', '�', '🐨', '🐯', '🐰', '🐷', '🐸', '🐵'] },
+    { "name": "動物", "items": ['🐶', '🐱', '🐭', '🦊', '🐻', '🐼', '🐨', '🐯', '🐰', '🐷', '🐸', '🐵'] },
     { "name": "恐龍", "items": ['🦖', '🦕', '🐊', '🐉', '🐲', '🦎', '🐍', '🐢', '🦤', '🦚', '🦢', '🦜'] },
     { "name": "食物", "items": ['🍎', '🍌', '🍉', '🍇', '🍓', '🍒', '🍑', '🍍', '🥝', '🍔', '🍕', '🍩'] },
     { "name": "表情", "items": ['😄', '😠', '😢', '😂', '😮', '🤔', '😴', '😎', '😍', '😭', '😉', '😐'] },
@@ -226,16 +226,29 @@ if 'puzzle_generated' in st.session_state and st.session_state.puzzle_generated:
         st.markdown(canvas_html, unsafe_allow_html=True)
 
     with questions_container:
+        # 將問題分成三欄顯示
         q_cols = st.columns(3)
         col_idx = 0
+        # 將問題排序以獲得一致的顯示順序
         sorted_zones = sorted(ZONE_DEFINITIONS, key=lambda x: x['name'])
         for zone in sorted_zones:
+            # 只有當該區域有物品時，才顯示問題
             if st.session_state.correct_answers.get(zone['type'], 0) > 0:
                 with q_cols[col_idx % 3]:
-                    st.number_input(
-                        label=f"{zone['name']}有幾個 {st.session_state.current_theme['items'][zone['emoji_idx']]}？", 
-                        min_value=0, 
-                        step=1, 
-                        key=f"answer_{zone['type']}"
-                    )
+                    # 建立一個容器來美化每個問題
+                    with st.container(border=True):
+                        # 為每個問題建立左右兩欄
+                        label_col, input_col = st.columns([3, 2])
+                        with label_col:
+                            # 用 markdown 顯示問題，可以控制樣式
+                            st.markdown(f"<p style='font-size: 1.1rem; text-align: right; margin-top: 10px;'>{zone['name']}有幾個 {st.session_state.current_theme['items'][zone['emoji_idx']]}？</p>", unsafe_allow_html=True)
+                        with input_col:
+                            # 數字輸入框，隱藏它自己的標籤
+                            st.number_input(
+                                label=f"hidden_label_for_{zone['type']}", # label 還是需要，但設為隱藏
+                                min_value=0, 
+                                step=1, 
+                                key=f"answer_{zone['type']}",
+                                label_visibility="collapsed"
+                            )
                 col_idx += 1
