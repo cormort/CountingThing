@@ -6,9 +6,9 @@ import math
 
 # 定義所有可用的Emoji主題 (已新增臉部表情)
 EMOJI_THEMES = [
-    { "name": "動物", "items": ['🐶', '🐱', '🐭', '🦊', '🐻', '🐼', '🐨', '🐯', '🐰', '🐷', '🐸', '🐵'] },
+    { "name": "動物", "items": ['🐶', '🐱', '🐭', '🦊', '🐻', '🐼', '�', '🐯', '🐰', '🐷', '🐸', '🐵'] },
     { "name": "恐龍", "items": ['🦖', '🦕', '🐊', '🐉', '🐲', '🦎', '🐍', '🐢', '🦤', '🦚', '🦢', '🦜'] },
-    { "name": "食物", "items": ['🍎', '�', '🍉', '🍇', '🍓', '🍒', '🍑', '🍍', '🥝', '🍔', '🍕', '🍩'] },
+    { "name": "食物", "items": ['🍎', '🍌', '🍉', '🍇', '🍓', '🍒', '🍑', '🍍', '🥝', '🍔', '🍕', '🍩'] },
     { "name": "表情", "items": ['😄', '😠', '😢', '😂', '😮', '🤔', '😴', '😎', '😍', '😭', '😉', '😐'] },
 ]
 
@@ -211,9 +211,8 @@ if 'puzzle_generated' in st.session_state and st.session_state.puzzle_generated:
     with canvas_container:
         items_html = ""
         for item in st.session_state.placed_items:
-            items_html += f'<div class="item-box" style="position: absolute; left: {item["x"]-ITEM_SIZE/2}px; top: {item["y"]-ITEM_SIZE/2}px; font-size: 1.75rem;">{item["emoji"]}</div>'
+            items_html += f'<div style="position: absolute; left: {item["x"] - ITEM_SIZE/2}px; top: {item["y"] - ITEM_SIZE/2}px; font-size: 1.75rem; width: {ITEM_SIZE}px; height: {ITEM_SIZE}px; display: flex; align-items: center; justify-content: center;">{item["emoji"]}</div>'
         
-        # BUG FIX: The main container needs `position: relative` for absolute positioning to work correctly inside it.
         canvas_html = f"""
         <div style="position: relative; width:{CANVAS_W}px; height:{CANVAS_H}px; background-color: #f8fafc; border-radius: 1rem; border: 2px solid #e2e8f0; margin: auto;">
             <div style="position: absolute; left: {RECT['x']}px; top: {RECT['y']}px; width: {RECT['width']}px; height: {RECT['height']}px; border: 4px solid #f59e0b; border-radius: 0.5rem;"></div>
@@ -229,7 +228,6 @@ if 'puzzle_generated' in st.session_state and st.session_state.puzzle_generated:
     with questions_container:
         q_cols = st.columns(3)
         col_idx = 0
-        # Sort zones to have a consistent order
         sorted_zones = sorted(ZONE_DEFINITIONS, key=lambda x: x['name'])
         for zone in sorted_zones:
             if st.session_state.correct_answers.get(zone['type'], 0) > 0:
