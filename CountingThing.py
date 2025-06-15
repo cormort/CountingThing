@@ -6,7 +6,7 @@ import math
 
 # 定義所有可用的Emoji主題 (已新增臉部表情)
 EMOJI_THEMES = [
-    { "name": "動物", "items": ['🐶', '🐱', '🐭', '🦊', '🐻', '🐼', '🐨', '🐯', '🐰', '🐷', '🐸', '🐵'] },
+    { "name": "動物", "items": ['🐶', '�', '🐭', '🦊', '🐻', '🐼', '🐨', '🐯', '🐰', '🐷', '🐸', '🐵'] },
     { "name": "恐龍", "items": ['🦖', '🦕', '🐊', '🐉', '🐲', '🦎', '🐍', '🐢', '🦤', '🦚', '🦢', '🦜'] },
     { "name": "食物", "items": ['🍎', '🍌', '🍉', '🍇', '🍓', '🍒', '🍑', '🍍', '🥝', '🍔', '🍕', '🍩'] },
     { "name": "表情", "items": ['😄', '😠', '😢', '😂', '😮', '🤔', '😴', '😎', '😍', '😭', '😉', '😐'] },
@@ -213,10 +213,11 @@ if 'puzzle_generated' in st.session_state and st.session_state.puzzle_generated:
         for item in st.session_state.placed_items:
             items_html += f'<div style="position: absolute; left: {item["x"] - ITEM_SIZE/2}px; top: {item["y"] - ITEM_SIZE/2}px; font-size: 1.75rem; width: {ITEM_SIZE}px; height: {ITEM_SIZE}px; display: flex; align-items: center; justify-content: center;">{item["emoji"]}</div>'
         
+        # 圓形顏色已從 #14b8a6 (teal) 改為 #4f46e5 (indigo)
         canvas_html = f"""
         <div style="position: relative; width:{CANVAS_W}px; height:{CANVAS_H}px; background-color: #f8fafc; border-radius: 1rem; border: 2px solid #e2e8f0; margin: auto;">
             <div style="position: absolute; left: {RECT['x']}px; top: {RECT['y']}px; width: {RECT['width']}px; height: {RECT['height']}px; border: 4px solid #f59e0b; border-radius: 0.5rem;"></div>
-            <div style="position: absolute; left: {CIRCLE['cx']-CIRCLE['r']}px; top: {CIRCLE['cy']-CIRCLE['r']}px; width: {CIRCLE['r']*2}px; height: {CIRCLE['r']*2}px; border: 4px solid #14b8a6; border-radius: 9999px;"></div>
+            <div style="position: absolute; left: {CIRCLE['cx']-CIRCLE['r']}px; top: {CIRCLE['cy']-CIRCLE['r']}px; width: {CIRCLE['r']*2}px; height: {CIRCLE['r']*2}px; border: 4px solid #4f46e5; border-radius: 9999px;"></div>
             <svg style="position: absolute; width:100%; height:100%; top:0; left:0; overflow:visible;">
                 <polygon points="{TRI['v'][0]['x']},{TRI['v'][0]['y']} {TRI['v'][1]['x']},{TRI['v'][1]['y']} {TRI['v'][2]['x']},{TRI['v'][2]['y']}" style="fill:transparent; stroke:#f43f5e; stroke-width:4;" />
             </svg>
@@ -226,26 +227,21 @@ if 'puzzle_generated' in st.session_state and st.session_state.puzzle_generated:
         st.markdown(canvas_html, unsafe_allow_html=True)
 
     with questions_container:
-        # 將問題分成三欄顯示
-        q_cols = st.columns(3)
+        # 版面已修改為兩欄式
+        q_cols = st.columns(2)
         col_idx = 0
-        # 將問題排序以獲得一致的顯示順序
         sorted_zones = sorted(ZONE_DEFINITIONS, key=lambda x: x['name'])
         for zone in sorted_zones:
-            # 只有當該區域有物品時，才顯示問題
             if st.session_state.correct_answers.get(zone['type'], 0) > 0:
-                with q_cols[col_idx % 3]:
-                    # 建立一個容器來美化每個問題
+                with q_cols[col_idx % 2]:
                     with st.container(border=True):
-                        # 為每個問題建立左右兩欄
                         label_col, input_col = st.columns([3, 2])
                         with label_col:
-                            # 用 markdown 顯示問題，可以控制樣式
-                            st.markdown(f"<p style='font-size: 1.1rem; text-align: right; margin-top: 10px;'>{zone['name']}有幾個 {st.session_state.current_theme['items'][zone['emoji_idx']]}？</p>", unsafe_allow_html=True)
+                            # 字體已加大
+                            st.markdown(f"<p style='font-size: 1.25rem; text-align: right; margin-top: 10px;'>{zone['name']}有幾個 {st.session_state.current_theme['items'][zone['emoji_idx']]}？</p>", unsafe_allow_html=True)
                         with input_col:
-                            # 數字輸入框，隱藏它自己的標籤
                             st.number_input(
-                                label=f"hidden_label_for_{zone['type']}", # label 還是需要，但設為隱藏
+                                label=f"hidden_label_for_{zone['type']}",
                                 min_value=0, 
                                 step=1, 
                                 key=f"answer_{zone['type']}",
